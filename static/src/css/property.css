@@ -1,0 +1,11 @@
+.table_style table thead  tr  th {
+    background-color: lightblue !important;
+    text-align: center;
+}
+
+.table_style table thead tr th:nth-child(2){
+    width: 150px !important;
+}
+
+
+

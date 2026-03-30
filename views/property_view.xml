@@ -1,0 +1,117 @@
+<odoo>
+
+    <record id="property_action" model="ir.actions.act_window">
+        <field name="name">All Properties</field>
+        <field name="res_model">property</field>
+    </record>
+
+        <menuitem
+        id="property_item"
+        name="All Properties"
+        parent="property_menu"
+        action="property_action"
+    />
+
+
+    <record id="property_view_tree" model="ir.ui.view">
+        <field name="name">property tree</field>
+        <field name="model">property</field>
+        <field name="arch" type="xml">
+            <tree multi_edit="1" class="table_style">
+<!--            <tree multi_edit="1" edit="0" create="0" delete="0">-->
+                <field name="name"/>
+                <field name="owner_id"/>
+                <field name="description"/>
+                <field name="tag_ids"/>
+                <field name="postcode"/>
+                <field name="date_availability"/>
+                <field name="expected_price"/>
+                <field name="selling_price"/>
+                <field name="bedrooms" optional="1"/>
+                <field name="living_area" optional="1"/>
+                <field name="garage"/>
+                <field name="garden"/>
+                <field name="garden_area"/>
+                <field name="garden_orientation"/>
+            </tree>
+        </field>
+    </record>
+
+     <record id="property_view_form" model="ir.ui.view">
+        <field name="name">property form</field>
+        <field name="model">property</field>
+        <field name="arch" type="xml">
+           <form>
+               <sheet>
+                   <div style="display: flex; justify-content: space-between; align-items:center">
+                       <div>
+                           <button name="set_to_draft" type="object" class="btn-primary mx-1" string="Set To Draft" invisible="state == 'draft'"/>
+                           <button name="set_to_pending" type="object" class="btn-secondary mx-3" string="Pending" invisible="state != 'draft'"/>
+                           <button name="set_to_sold" type="object" class="btn-success" string="Sold" invisible="state != 'pending'"/>
+                       </div>
+                       <div>
+                           <field name="state" widget="statusbar" options="{'clickable': 1}"/>
+                       </div>
+                   </div>
+
+                    <div class="oe_title mt-5">
+                                <label for="name"/>
+                                <h1>
+                                 <field name="name"/>
+                               </h1>
+                        </div>
+
+                   <group>
+                        <group string="general info.">
+                            <field name="owner_id"/>
+                            <field name="owner_phone"/>
+                            <field name="owner_address"/>
+                            <field name="postcode"/>
+                            <field name="date_availability"/>
+                            <field name="expected_price"/>
+                            <field name="selling_price"/>
+                            <field name="diff"/>
+                            <field name="tag_ids" widget="many2many_tags"/>
+                   </group>
+
+                   <group string="additional info.">
+                        <field name="bedrooms"/>
+
+                        <field name="living_area"/>
+                        <field name="garage"/>
+                        <field name="garden"/>
+                        <field name="garden_area"/>
+                        <field name="garden_orientation"/>
+                   </group>
+                   </group>
+                        <group>
+                            <field name="description"/>
+                        </group>
+
+               </sheet>
+               <div class="oe_chatter">
+                   <field name="message_follower_ids"/>
+                   <field name="activity_ids"/>
+                   <field name="message_ids"/>
+               </div>
+           </form>
+        </field>
+    </record>
+
+
+        <record id="property_view_search" model="ir.ui.view">
+        <field name="name">property search</field>
+        <field name="model">property</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="postcode"/>
+                <field name="name"/>
+
+                <filter name="garden" string="With Garden" domain="[('garden','=',True)]"/>
+                <filter name="garden" string="Without Garden" domain="[('garden','=',False)]"/>
+                <filter name="garden" string="Garden" context="{'group_by':'garden'}"/>
+            </search>
+        </field>
+    </record>
+
+</odoo>
