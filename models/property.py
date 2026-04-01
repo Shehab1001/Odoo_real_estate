@@ -4,13 +4,15 @@ from odoo.exceptions import ValidationError
 
 class Property(models.Model):
     _name = "property"
-    _description = "Property Record"
+    _description = "Property"
 
     _inherit = ["mail.thread", "mail.activity.mixin"]
     name = fields.Char(default="Villa: ", size= 11, required=1)
     description = fields.Text()
     postcode = fields.Char(required=1, tracking=1)
     date_availability = fields.Date()
+    expected_selling_date = fields.Date(tracking = 1)
+    is_late = fields.Boolean()
     expected_price = fields.Float()
     selling_price = fields.Float()
     diff = fields.Float(compute='_compute_diff', store=True)
@@ -20,6 +22,7 @@ class Property(models.Model):
     garage = fields.Boolean()
     garden = fields.Boolean()
     garden_area = fields.Integer()
+    active = fields.Boolean(default=True)
     garden_orientation = fields.Selection([
         ('north', 'North'),
         ('south', 'South'),
@@ -31,6 +34,7 @@ class Property(models.Model):
         ('draft','Draft'),
         ('pending','Pending'),
         ('sold','Sold'),
+        ('closed','Closed'),
     ], default='draft')
 
     owner_id = fields.Many2one('owner')
@@ -39,6 +43,8 @@ class Property(models.Model):
 
     owner_phone = fields.Char(related='owner_id.phone')
     owner_address = fields.Char(related='owner_id.address')
+    line_ids = fields.One2many('property.line', 'property_id')
+
 
     _sql_constraints = [
         ('unique_name','unique("name")','Name already exists!')
@@ -50,6 +56,18 @@ class Property(models.Model):
             if rec.bedrooms == 0:
                 raise ValidationError('Numbers of Bedrooms is Empty')
 
+
+    def check_expected_selling_date(self):
+            property_ids = self.search([])
+            for rec in property_ids:
+                if rec.expected_selling_date and rec.expected_selling_date < fields.date.today():
+                    rec.is_late = True
+                elif rec.expected_selling_date and rec.expected_selling_date >= fields.date.today():
+                    rec.is_late = False
+
+    def action_closed(self):
+        for rec in self:
+            rec.state = 'closed'
 
 
     @api.depends('expected_price', 'selling_price')  # depends on simple fields (view fields + model fields) + relation fields + any fields
@@ -110,3 +128,14 @@ class Property(models.Model):
     #     print("inside Unlink method :)")
     #     return res
     #
+
+
+class PropertyLine(models.Model):
+    _name = "property.line"
+    _description = "Property Line"
+    area = fields.Float()
+    description = fields.Char()
+    property_id = fields.Many2one('property')
+
+
+

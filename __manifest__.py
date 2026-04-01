@@ -3,7 +3,7 @@
     "author": "Shehab Saeed",
     "version": "17.0.0.1.0",
     "category": "",
-    "depends": ["base", "sale_management", "mail"],
+    "depends": ["base", "sale_management", "mail", "contacts", "web"],
     "application": True,
     "license": "LGPL-3",
     "data": [
@@ -13,8 +13,11 @@
         "views/owner_view.xml",
         "views/tag_view.xml",
         "views/sale_order_view.xml",
+        "views/res_partner_view.xml",
+        "reports/property_report.xml"
     ],
     "assets": {
         'web.assets_backend':['app_one/static/src/css/property.css']
     }
 }
+

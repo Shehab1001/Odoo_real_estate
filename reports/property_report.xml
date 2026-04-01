@@ -1,0 +1,85 @@
+<odoo>
+    <record id="property_report" model="ir.actions.report">
+        <field name="name">Property Report</field>
+        <field name="model">property</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="binding_model_id" ref="model_property"/>
+        <field name="binding_type">report</field>
+        <field name="report_name">app_one.property_report_template</field>
+    </record>
+
+    <template id="property_report_template">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="rec">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <style>
+                            table {
+                            width: 100%;
+                            border-collapse: collapse;
+                            padding: 40px;
+                            text-align: center;
+                            }
+
+                            table thead th {
+                            padding: 10px;
+                            font-weight: bold;
+                            background-color: lightgray;
+                            }
+                        </style>
+                        <h1>Property Report</h1>
+                        <table>
+                            <thead>
+                                <th colspan="4">General info.</th>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>
+                                        <t t-esc="rec.name"/>
+                                    </td>
+                                    <td>Phone</td>
+                                    <td>
+                                        <t t-esc="rec.owner_phone"/>
+                                    </td>
+                                </tr>
+                            </tbody>
+                            <thead>
+                                <th colspan="4">Additional info.</th>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Owner</td>
+                                    <td>
+                                        <span t-field="rec.owner_id"/>
+                                    </td>
+                                    <td>Address</td>
+                                    <td>
+                                        <span t-field="rec.owner_address"/>
+                                    </td>
+                                </tr>
+                            </tbody>
+                            <thead>
+                                <th colspan="2">Description</th>
+                                <th colspan="2">Area (m2)</th>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="rec.line_ids" t-as="line">
+                                    <tr>
+                                        <td  colspan="2">
+                                            <span t-field="line.description"/>
+                                        </td>
+                                        <td  colspan="2">
+                                            <span t-field="line.area"/>
+                                        </td>
+                                    </tr>
+
+                                </t>
+                            </tbody>
+                        </table>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>
