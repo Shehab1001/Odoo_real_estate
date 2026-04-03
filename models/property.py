@@ -1,3 +1,5 @@
+from uaclient.cli.api import action_api
+
 from odoo import models, fields, api
 from odoo.exceptions import ValidationError
 
@@ -7,9 +9,9 @@ class Property(models.Model):
     _description = "Property"
     _inherit = ["mail.thread", "mail.activity.mixin"]
 
-    name = fields.Char(default="Villa: ", size= 11, required=1)
+    name = fields.Char(default="Villa: ", size= 50, required=1, translate=1)
     ref = fields.Char(default = "new", readonly=1)
-    description = fields.Text()
+    description = fields.Text(groups='app_one.property_manager_group')
     postcode = fields.Char(required=1, tracking=1)
     date_availability = fields.Date()
     expected_selling_date = fields.Date(tracking = 1)
@@ -39,7 +41,7 @@ class Property(models.Model):
     ], default='draft')
 
     owner_id = fields.Many2one('owner')
-    tag_ids = fields.Many2many('tag')
+    tag_ids = fields.Many2many('tag', groups='app_one.property_manager_group')
     sale_id = fields.Many2one('sale.order')
 
     owner_phone = fields.Char(related='owner_id.phone')
@@ -101,34 +103,44 @@ class Property(models.Model):
                 'reason': reason or ""
             })
 
+    def action(self):
+        print(self.env['property'].search(['|', ('name','=','Villa N-74'), ('postcode', '!=', '4578508')]))
+
 
     def set_to_draft(self):
         for rec in self:
-            rec.create_history_record(rec.state, 'draft')
+            rec.create_history_record(rec.state, 'draft', '')
             rec.state = 'draft'
 
 
     def set_to_pending(self):
         for rec in self:
-            rec.create_history_record(rec.state, 'pending')
+            rec.create_history_record(rec.state, 'pending', '')
             rec.state = 'pending'
 
 
     def set_to_sold(self):
         for rec in self:
-            rec.create_history_record(rec.state, 'sold')
+            rec.create_history_record(rec.state, 'sold', '')
             rec.state = 'sold'
 
 
     def action_closed(self):
         for rec in self:
-            rec.create_history_record(rec.state, 'closed')
+            rec.create_history_record(rec.state, 'closed', '')
             rec.state = 'closed'
 
 
     def open_change_state_wizard(self):
         action = self.env['ir.actions.actions']._for_xml_id('app_one.change_state_window_action')
         action['context'] = {'default_property_id': self.id}
+        return action
+
+    def open_related_owner(self):
+        action = self.env['ir.actions.actions']._for_xml_id('app_one.owner_action')
+        view_id = self.env.ref('app_one.owner_view_form').id
+        action['res_id'] = self.owner_id.id
+        action['views'] = [[view_id, 'form']]
         return action
 
     # def set_action(self):

@@ -76,8 +76,14 @@
         <field name="arch" type="xml">
             <form>
                 <sheet>
+                    <div name="button_box" class="oe_button_box">
+                        <button name="open_related_owner" type="object" string="Owner" icon="fa-user" invisible="not owner_id"/>
+                    </div>
+                    <widget name="web_ribbon" title="Archived" bg_color="text-bg-danger" invisible="active"/>
+                    <widget name="web_ribbon" title="Sold" bg_color="text-bg-success" invisible="state != 'sold'"/>
                     <div style="display: flex; justify-content: space-between; align-items:center">
                         <div>
+                             <button name="action" type="object" class="btn-primary mx-1" string="Action"/>
                             <button name="set_to_draft" type="object" class="btn-primary mx-1" string="Set To Draft"
                                     invisible="state in ('draft','closed')"/>
                             <button name="set_to_pending" type="object" class="btn-secondary mx-3" string="Pending"

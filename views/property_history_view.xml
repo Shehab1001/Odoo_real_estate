@@ -11,6 +11,7 @@
             name="History"
             parent="property_menu"
             action="history_action"
+            groups="app_one.property_manager_group"
     />
 
 

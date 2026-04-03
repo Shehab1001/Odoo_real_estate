@@ -7,6 +7,7 @@
     "application": True,
     "license": "LGPL-3",
     "data": [
+        "security/property_manager_group.xml",
         "security/ir.model.access.csv",
         "data/sequence.xml",
         "views/base_menu.xml",
