@@ -5,9 +5,10 @@ from odoo.exceptions import ValidationError
 class Property(models.Model):
     _name = "property"
     _description = "Property"
-
     _inherit = ["mail.thread", "mail.activity.mixin"]
+
     name = fields.Char(default="Villa: ", size= 11, required=1)
+    ref = fields.Char(default = "new", readonly=1)
     description = fields.Text()
     postcode = fields.Char(required=1, tracking=1)
     date_availability = fields.Date()
@@ -65,10 +66,6 @@ class Property(models.Model):
                 elif rec.expected_selling_date and rec.expected_selling_date >= fields.date.today():
                     rec.is_late = False
 
-    def action_closed(self):
-        for rec in self:
-            rec.state = 'closed'
-
 
     @api.depends('expected_price', 'selling_price')  # depends on simple fields (view fields + model fields) + relation fields + any fields
     def _compute_diff(self):
@@ -87,22 +84,67 @@ class Property(models.Model):
                 'warning': {'title':'Warning', 'message':'negative number','notification':'warning'},
                  }
 
+    @api.model
+    def create(self, vals):
+        res = super().create(vals)
+        if res.ref == "new":
+            res.ref = self.env['ir.sequence'].next_by_code('property_seq')
+        return res
+
+    def create_history_record(self, old_state, new_state, reason):
+        for rec in self:
+            rec.env['property.history'].create({
+                'user_id': rec.env.uid,
+                'property_id': rec.id,
+                'old_state': old_state,
+                'new_state': new_state,
+                'reason': reason or ""
+            })
 
 
     def set_to_draft(self):
         for rec in self:
+            rec.create_history_record(rec.state, 'draft')
             rec.state = 'draft'
-            print("set to draft")
+
 
     def set_to_pending(self):
         for rec in self:
+            rec.create_history_record(rec.state, 'pending')
             rec.state = 'pending'
-            print("set to pending")
+
 
     def set_to_sold(self):
         for rec in self:
+            rec.create_history_record(rec.state, 'sold')
             rec.state = 'sold'
-            print("set to sold")
+
+
+    def action_closed(self):
+        for rec in self:
+            rec.create_history_record(rec.state, 'closed')
+            rec.state = 'closed'
+
+
+    def open_change_state_wizard(self):
+        action = self.env['ir.actions.actions']._for_xml_id('app_one.change_state_window_action')
+        action['context'] = {'default_property_id': self.id}
+        return action
+
+    # def set_action(self):
+    #     print(self.env['owner'].create(
+    #         {
+    #             'name': 'Mohamed Youssef',
+    #             'phone': '0123456789',
+    #             'address': '12 Mohamed Youse, Alex, EGY',
+    #         }
+    #     ))
+
+    # def set_action(self):
+    #     print(self.env.company.name)
+
+
+
 
 # CRUD Operations:
 

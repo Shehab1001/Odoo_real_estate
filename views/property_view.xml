@@ -5,15 +5,26 @@
         <field name="res_model">property</field>
     </record>
 
-<!--    <record id="property_closed_action" model="ir.actions.server">-->
-<!--        <field name="name">Closed</field>-->
-<!--        <field name="model_id" ref="model_property"/>-->
-<!--        <field name="binding_model_id" ref="model_property"/>-->
-<!--        <field name="state">code</field>-->
-<!--        <field name="code">-->
-<!--            action = records.action_closed()-->
-<!--        </field>-->
-<!--    </record>-->
+    <!--    <record id="property_closed_action" model="ir.actions.server">-->
+    <!--        <field name="name">Closed</field>-->
+    <!--        <field name="model_id" ref="model_property"/>-->
+    <!--        <field name="binding_model_id" ref="model_property"/>-->
+    <!--        <field name="state">code</field>-->
+    <!--        <field name="code">-->
+    <!--            action = records.action_closed()-->
+    <!--        </field>-->
+    <!--    </record>-->
+
+
+            <record id="change_state_action" model="ir.actions.server">
+            <field name="name">Change State</field>
+            <field name="model_id" ref="model_property"/>
+            <field name="binding_model_id" ref="model_property"/>
+            <field name="state">code</field>
+            <field name="code">
+                action = records.open_change_state_wizard()
+            </field>
+        </record>
 
     <record id="check_selling_cron" model="ir.cron">
         <field name="name">Property Checking Selling</field>
@@ -44,7 +55,7 @@
                 <field name="description"/>
                 <field name="tag_ids"/>
                 <field name="postcode"/>
-                <field name="is_late" invisible="1"/>
+                <field name="is_late" />
                 <field name="date_availability"/>
                 <field name="expected_price"/>
                 <field name="selling_price"/>
@@ -68,7 +79,7 @@
                     <div style="display: flex; justify-content: space-between; align-items:center">
                         <div>
                             <button name="set_to_draft" type="object" class="btn-primary mx-1" string="Set To Draft"
-                                    invisible="state == 'draft'"/>
+                                    invisible="state in ('draft','closed')"/>
                             <button name="set_to_pending" type="object" class="btn-secondary mx-3" string="Pending"
                                     invisible="state != 'draft'"/>
                             <button name="set_to_sold" type="object" class="btn-success" string="Sold"
@@ -80,47 +91,50 @@
                     </div>
 
                     <div class="oe_title mt-5">
-                        <label for="name"/>
+                        <label for="ref"/>
                         <h1>
-                            <field name="name"/>
+                            <field name="ref"/>
                         </h1>
+                        <label for="name"/>
+                        <h3>
+                            <field name="name" readonly="state == 'closed'"/>
+                        </h3>
                     </div>
 
                     <group>
                         <group string="general info.">
-                            <field name="owner_id"/>
-                            <field name="owner_phone"/>
-                            <field name="owner_address"/>
-                            <field name="postcode"/>
-                            <field name="date_availability"/>
-                            <field name="expected_selling_date"/>
-                            <field name="is_late" invisible="1"/>
-                            <field name="expected_price"/>
-                            <field name="selling_price"/>
-                            <field name="diff"/>
-                            <field name="tag_ids" widget="many2many_tags"/>
+                            <field name="owner_id" readonly="state == 'closed'"/>
+                            <field name="owner_phone" readonly="state == 'closed'"/>
+                            <field name="owner_address" readonly="state == 'closed'"/>
+                            <field name="postcode" readonly="state == 'closed'"/>
+                            <field name="date_availability" readonly="state == 'closed'"/>
+                            <field name="expected_selling_date" readonly="state == 'closed'"/>
+                            <field name="is_late" invisible="1" readonly="state == 'closed'"/>
+                            <field name="expected_price" readonly="state == 'closed'"/>
+                            <field name="selling_price" readonly="state == 'closed'"/>
+                            <field name="diff" readonly="state == 'closed'"/>
+                            <field name="tag_ids" widget="many2many_tags" readonly="state == 'closed'"/>
                         </group>
 
                         <group string="additional info.">
-                            <field name="bedrooms"/>
-
-                            <field name="living_area"/>
-                            <field name="garage"/>
-                            <field name="garden"/>
-                            <field name="garden_area"/>
-                            <field name="garden_orientation"/>
-                            <field name="active" />
+                            <field name="bedrooms" readonly="state == 'closed'"/>
+                            <field name="living_area" readonly="state == 'closed'"/>
+                            <field name="garage" readonly="state == 'closed'"/>
+                            <field name="garden" readonly="state == 'closed'"/>
+                            <field name="garden_area" readonly="state == 'closed'"/>
+                            <field name="garden_orientation" readonly="state == 'closed'"/>
+                            <field name="active" readonly="state == 'closed'"/>
                         </group>
                     </group>
                     <group>
-                        <field name="description"/>
+                        <field name="description" readonly="state == 'closed'"/>
                     </group>
                     <notebook>
                         <page string="bedrooms">
-                            <field name="line_ids">
+                            <field name="line_ids" readonly="state == 'closed'">
                                 <tree editable="bottom">
-                                    <field name= "description" />
-                                <field name="area" />
+                                    <field name="description"/>
+                                    <field name="area"/>
                                 </tree>
                             </field>
                         </page>
@@ -143,12 +157,10 @@
             <search>
                 <field name="postcode"/>
                 <field name="name"/>
-
                 <filter name="garden" string="With Garden" domain="[('garden','=',True)]"/>
                 <filter name="garden" string="Without Garden" domain="[('garden','=',False)]"/>
                 <filter name="garden" string="Garden" context="{'group_by':'garden'}"/>
             </search>
         </field>
     </record>
-
 </odoo>
