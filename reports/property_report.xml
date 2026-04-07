@@ -19,6 +19,7 @@
                             border-collapse: collapse;
                             padding: 40px;
                             text-align: center;
+                            font-family: "Cairo-Regular";
                             }
 
                             table thead th {
@@ -27,7 +28,7 @@
                             background-color: lightgray;
                             }
                         </style>
-                        <h1>Property Report</h1>
+                        <h1 style="font-family: 'Cairo-Regular';">Property Report</h1>
                         <table>
                             <thead>
                                 <th colspan="4">General info.</th>

@@ -50,6 +50,10 @@
         <field name="arch" type="xml">
             <tree multi_edit="1" class="table_style" decoration-danger="(is_late)">
                 <!--            <tree multi_edit="1" edit="0" create="0" delete="0">-->
+
+                <header>
+                    <button name="property_xlsx_report" type="object" string="View Excel Report" class="btn-primary"/>
+                </header>
                 <field name="name"/>
                 <field name="owner_id"/>
                 <field name="description"/>
@@ -92,7 +96,7 @@
                                     invisible="state != 'pending'"/>
                         </div>
                         <div>
-                            <field name="state" widget="statusbar" options="{'clickable': 1}"/>
+                            <field name="state" widget="statusbar"/>
                         </div>
                     </div>
 
