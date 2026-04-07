@@ -1,5 +1,3 @@
-from uaclient.cli.api import action_api
-
 from odoo import models, fields, api
 from odoo.exceptions import ValidationError
 
@@ -8,6 +6,7 @@ class Property(models.Model):
     _name = "property"
     _description = "Property"
     _inherit = ["mail.thread", "mail.activity.mixin"]
+
 
     name = fields.Char(default="Villa: ", size= 50, required=1, translate=1)
     ref = fields.Char(default = "new", readonly=1)
@@ -73,17 +72,14 @@ class Property(models.Model):
     def _compute_diff(self):
         for rec in self:
             rec.diff = rec.selling_price - rec.expected_price
-            print('inside depends decorator')
 
 
     @api.onchange('expected_price')  # depends only on simple fields
     def _onchange_price(self):
         for rec in self:
-            rec.diff = rec.selling_price - rec.expected_price
-            print('inside onchange decorator')
-            if rec.expected_price <= 0:
+            if rec.expected_price < 0:
                 return {
-                'warning': {'title':'Warning', 'message':'negative number','notification':'warning'},
+                'warning': {'title':'Warning', 'message':'Expected Price Must not be Negative Number','notification':'warning'},
                  }
 
     @api.model
@@ -142,6 +138,9 @@ class Property(models.Model):
         action['res_id'] = self.owner_id.id
         action['views'] = [[view_id, 'form']]
         return action
+
+    def property_xlsx_report(self):
+        print('inside xlsx report')
 
     # def set_action(self):
     #     print(self.env['owner'].create(
