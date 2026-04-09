@@ -8,12 +8,12 @@ class Property(models.Model):
     _inherit = ["mail.thread", "mail.activity.mixin"]
 
 
-    name = fields.Char(default="Villa: ", size= 50, required=1, translate=1)
-    ref = fields.Char(default = "new", readonly=1)
+    name = fields.Char(default="Villa: ", size= 50, required=True, translate=True)
+    ref = fields.Char(default = "new", readonly=True)
     description = fields.Text(groups='app_one.property_manager_group')
-    postcode = fields.Char(required=1, tracking=1)
+    postcode = fields.Char(required=True, tracking=True)
     date_availability = fields.Date()
-    expected_selling_date = fields.Date(tracking = 1)
+    expected_selling_date = fields.Date(tracking = True)
     is_late = fields.Boolean()
     expected_price = fields.Float()
     selling_price = fields.Float()
