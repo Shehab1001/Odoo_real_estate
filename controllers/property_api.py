@@ -62,6 +62,41 @@ class PropertyApi(http.Controller):
             }, status=400)
 
 
+    # --------READ Operation-----------
+    @http.route("/v1/property/<int:property_id>", methods=["GET"],type="http", auth="none", csrf=False)
+    def read_endpoint(self, property_id):
+            try:
+                property_id = request.env['property'].sudo().search([('id', '=', property_id)])
+                if not property_id:
+                    return request.make_json_response({"message":"Property Not Found!"}, status=404)
+
+                return request.make_json_response({
+                    "id":property_id.id,
+                    "name":property_id.name,
+                    "ref": property_id.ref,
+                    "description":property_id.description,
+                    "postcode":property_id.postcode,
+                    "date_availability":property_id.date_availability,
+                    "expected_selling_date":property_id.expected_selling_date,
+                    "is_late":property_id.is_late,
+                    "expected_price":property_id.expected_price,
+                    "selling_price":property_id.selling_price,
+                    "diff":property_id.diff,
+                    "bedrooms":property_id.bedrooms,
+                    "living_area":property_id.living_area,
+                    "garage":property_id.garage,
+                    "garden_orientation":property_id.garden_orientation,
+                    "owner_id":property_id.owner_id.name,
+                    "owner_address":property_id.owner_address
+                }, status=200)
+
+
+            except Exception as error:
+                return request.make_json_response({
+                    "message":error
+                }, status=400)
+
+
 
 
 
