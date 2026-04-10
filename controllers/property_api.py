@@ -1,4 +1,5 @@
 import json
+from urllib.parse import parse_qs
 from odoo import http
 from odoo.http import request
 
@@ -117,6 +118,36 @@ class PropertyApi(http.Controller):
                 "message":error
             },status=400)
 
+
+
+    # --------GET Operation  ALL properties -----------
+
+    @http.route("/v1/properties", methods=["GET"], type="http", auth="none", csrf=False)
+    def get_endpoint_list(self):
+        try:
+            params = parse_qs(request.httprequest.query_string.decode('utf-8'))
+            property_domain = []
+            if params.get('state'):
+                property_domain += [('state', '=', params.get('state')[0])]
+            print(property_domain)
+
+            property_ids = request.env['property'].sudo().search(property_domain)
+            if not property_ids:
+                return request.make_json_response({"message":"There are no records!"}, status=400)
+
+            return request.make_json_response([{
+                "id": property_id.id,
+                "name": property_id.name,
+                "ref": property_id.ref,
+                "description": property_id.description,
+                "postcode": property_id.postcode,
+                "state": property_id.state
+            } for property_id in property_ids], status=200)
+        
+        except Exception as error:
+            return request.make_json_response({
+                "message":error
+            },status=400)
 
 
 
